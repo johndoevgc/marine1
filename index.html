@@ -1,0 +1,284 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>VGC MARITIME CYBER</title>
+
+    <!-- Leaflet.js for Maps -->
+    <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
+    <script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
+
+    <!-- Chart.js for Visualizations -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.1/dist/chart.umd.min.js"></script>
+
+    <!-- SheetJS for Excel Export -->
+    <script src="https://cdn.sheetjs.com/xlsx-0.20.1/package/dist/xlsx.full.min.js"></script>
+
+    <!-- jsPDF for PDF Export -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+
+    <link rel="stylesheet" href="css/styles.css" />
+</head>
+<body>
+    <!-- Header -->
+    <header class="main-header">
+        <div class="header-content">
+            <div class="header-brand">
+                <span class="header-icon">&#9875;</span>
+                <h1>VGC MARITIME CYBER</h1>
+            </div>
+            <div class="header-subtitle">Maritime Cybersecurity Dashboard</div>
+        </div>
+    </header>
+
+    <!-- Main Dashboard View -->
+    <main id="view-dashboard" class="view active">
+        <div class="dashboard-grid">
+            <div class="nav-card" data-view="gps-tracking" tabindex="0" role="button" aria-label="GPS Tracking">
+                <span class="card-badge badge-live">Live</span>
+                <div class="card-icon">&#127758;</div>
+                <h3>Vessel GPS Tracking</h3>
+                <p>Real-time vessel positions on interactive map</p>
+            </div>
+            <div class="nav-card" data-view="analytics" tabindex="0" role="button" aria-label="AI Analytics">
+                <span class="card-badge badge-smart">Smart</span>
+                <div class="card-icon">&#129302;</div>
+                <h3>AI Analytics</h3>
+                <p>Threat detection and security scoring</p>
+            </div>
+            <div class="nav-card" data-view="compliance" tabindex="0" role="button" aria-label="Compliance Checklist">
+                <span class="card-badge badge-export">Export</span>
+                <div class="card-icon">&#9989;</div>
+                <h3>Compliance Checklist</h3>
+                <p>Exportable compliance tracking to Excel/PDF</p>
+            </div>
+            <div class="nav-card" data-view="visualizations" tabindex="0" role="button" aria-label="Visualizations">
+                <span class="card-badge badge-charts">Charts</span>
+                <div class="card-icon">&#128202;</div>
+                <h3>Visualizations</h3>
+                <p>Interactive pie, scatter, and Gantt charts</p>
+            </div>
+            <div class="nav-card" data-view="admin" tabindex="0" role="button" aria-label="Admin Settings">
+                <span class="card-badge badge-admin">Admin</span>
+                <div class="card-icon">&#9881;</div>
+                <h3>Admin Settings</h3>
+                <p>GPS API configuration and system settings</p>
+            </div>
+            <div class="nav-card" data-view="gps-tracking" tabindex="0" role="button" aria-label="Live Map">
+                <span class="card-badge badge-live">Live</span>
+                <div class="card-icon">&#128674;</div>
+                <h3>Live Map</h3>
+                <p>Monitor vessel fleet in real-time</p>
+            </div>
+        </div>
+    </main>
+
+    <!-- GPS Tracking View -->
+    <section id="view-gps-tracking" class="view">
+        <div class="view-header">
+            <button class="btn-back" data-view="dashboard" aria-label="Back to Dashboard">&larr; Back</button>
+            <h2>Real-Time Vessel GPS Tracking</h2>
+        </div>
+        <div class="tracking-layout">
+            <div class="vessel-sidebar" id="vessel-list">
+                <h3>Vessel Fleet</h3>
+                <div id="vessel-list-items"></div>
+            </div>
+            <div id="map-container">
+                <div id="map"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- AI Analytics View -->
+    <section id="view-analytics" class="view">
+        <div class="view-header">
+            <button class="btn-back" data-view="dashboard" aria-label="Back to Dashboard">&larr; Back</button>
+            <h2>AI-Powered Analytics</h2>
+        </div>
+        <div class="analytics-grid">
+            <div class="analytics-card threat-card">
+                <h3>Current Threat Level</h3>
+                <div class="threat-level" id="threat-level">MODERATE</div>
+                <p>Last updated: <span id="threat-time"></span></p>
+            </div>
+            <div class="analytics-card score-card">
+                <h3>Security Score</h3>
+                <div class="security-score">
+                    <div class="score-circle" id="score-circle">
+                        <span class="score-value">87</span>
+                        <span class="score-label">/100</span>
+                    </div>
+                </div>
+            </div>
+            <div class="analytics-card metrics-card">
+                <h3>Security Metrics</h3>
+                <div class="metric-row">
+                    <span>Network Security</span>
+                    <div class="metric-bar"><div class="metric-fill" style="width:92%">92%</div></div>
+                </div>
+                <div class="metric-row">
+                    <span>Access Control</span>
+                    <div class="metric-bar"><div class="metric-fill" style="width:85%">85%</div></div>
+                </div>
+                <div class="metric-row">
+                    <span>Data Protection</span>
+                    <div class="metric-bar"><div class="metric-fill" style="width:78%">78%</div></div>
+                </div>
+            </div>
+            <div class="analytics-card insights-card">
+                <h3>AI Insights</h3>
+                <ul class="insights-list">
+                    <li class="insight-item">
+                        <span class="insight-icon">&#9888;</span>
+                        <div>
+                            <strong>Anomaly Detected</strong>
+                            <p>Unusual network traffic pattern detected on vessel MV Pacific Star at 03:42 UTC</p>
+                        </div>
+                    </li>
+                    <li class="insight-item">
+                        <span class="insight-icon">&#128736;</span>
+                        <div>
+                            <strong>Predictive Maintenance</strong>
+                            <p>Firewall firmware update recommended for 3 vessels within the next 14 days</p>
+                        </div>
+                    </li>
+                    <li class="insight-item">
+                        <span class="insight-icon">&#128161;</span>
+                        <div>
+                            <strong>Recommendation</strong>
+                            <p>Enable two-factor authentication on remaining 2 bridge systems to improve access control score</p>
+                        </div>
+                    </li>
+                    <li class="insight-item">
+                        <span class="insight-icon">&#128202;</span>
+                        <div>
+                            <strong>Trend Analysis</strong>
+                            <p>Phishing attempts increased 15% this quarter — crew awareness training recommended</p>
+                        </div>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </section>
+
+    <!-- Compliance Checklist View -->
+    <section id="view-compliance" class="view">
+        <div class="view-header">
+            <button class="btn-back" data-view="dashboard" aria-label="Back to Dashboard">&larr; Back</button>
+            <h2>Compliance Checklist</h2>
+            <div class="export-buttons">
+                <button class="btn-export btn-excel" id="btn-export-excel">&#128196; Export Excel</button>
+                <button class="btn-export btn-pdf" id="btn-export-pdf">&#128196; Export PDF</button>
+            </div>
+        </div>
+        <div class="compliance-summary">
+            <div class="compliance-percent" id="compliance-percent">78%</div>
+            <span>Overall Compliance</span>
+        </div>
+        <div class="checklist-container" id="checklist-container"></div>
+    </section>
+
+    <!-- Visualizations View -->
+    <section id="view-visualizations" class="view">
+        <div class="view-header">
+            <button class="btn-back" data-view="dashboard" aria-label="Back to Dashboard">&larr; Back</button>
+            <h2>Interactive Visualizations</h2>
+        </div>
+        <div class="charts-grid">
+            <div class="chart-card">
+                <h3>Security Threat Distribution</h3>
+                <canvas id="pie-chart"></canvas>
+            </div>
+            <div class="chart-card">
+                <h3>Vessel Performance Metrics</h3>
+                <canvas id="scatter-chart"></canvas>
+            </div>
+            <div class="chart-card chart-wide">
+                <h3>Security Audit Schedule</h3>
+                <canvas id="gantt-chart"></canvas>
+            </div>
+        </div>
+    </section>
+
+    <!-- Admin Settings View -->
+    <section id="view-admin" class="view">
+        <div class="view-header">
+            <button class="btn-back" data-view="dashboard" aria-label="Back to Dashboard">&larr; Back</button>
+            <h2>Admin Settings</h2>
+        </div>
+        <div class="admin-grid">
+            <div class="admin-card">
+                <h3>GPS API Configuration</h3>
+                <div class="form-group">
+                    <label for="gps-provider">GPS Provider</label>
+                    <select id="gps-provider">
+                        <option value="openstreetmap">OpenStreetMap</option>
+                        <option value="googlemaps">Google Maps</option>
+                        <option value="mapbox">Mapbox</option>
+                        <option value="custom">Custom Provider</option>
+                    </select>
+                </div>
+                <div class="form-group">
+                    <label for="api-key">API Key</label>
+                    <input type="text" id="api-key" placeholder="Enter API key..." />
+                </div>
+                <div class="form-group">
+                    <label for="update-interval">Update Interval (seconds)</label>
+                    <input type="number" id="update-interval" min="5" max="300" value="5" />
+                </div>
+                <div class="form-group">
+                    <label for="tracking-mode">Tracking Mode</label>
+                    <select id="tracking-mode">
+                        <option value="realtime">Real-time</option>
+                        <option value="periodic">Periodic</option>
+                        <option value="ondemand">On-Demand</option>
+                    </select>
+                </div>
+                <button class="btn-save" id="btn-save-gps">Save GPS Settings</button>
+            </div>
+            <div class="admin-card">
+                <h3>Alert Settings</h3>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="alert-email" checked /> Email Alerts
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="alert-sms" /> SMS Alerts
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="alert-push" checked /> Push Notifications
+                    </label>
+                </div>
+                <button class="btn-save" id="btn-save-alerts">Save Alert Settings</button>
+            </div>
+            <div class="admin-card">
+                <h3>Security Settings</h3>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="sec-2fa" checked /> Two-Factor Authentication
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="sec-audit" checked /> Audit Logging
+                    </label>
+                </div>
+                <div class="form-group">
+                    <label>
+                        <input type="checkbox" id="sec-encryption" checked /> Data Encryption
+                    </label>
+                </div>
+                <button class="btn-save" id="btn-save-security">Save Security Settings</button>
+            </div>
+        </div>
+    </section>
+
+    <script src="js/app.js"></script>
+</body>
+</html>
