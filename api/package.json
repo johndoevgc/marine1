@@ -1,0 +1,12 @@
+{
+  "name": "vgc-maritime-api",
+  "version": "1.0.0",
+  "description": "Azure Functions API for VGC Maritime Cyber System",
+  "scripts": {
+    "start": "func start",
+    "test": "node --test tests/"
+  },
+  "dependencies": {
+    "mssql": "^10.0.4"
+  }
+}
