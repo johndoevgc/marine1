@@ -1846,9 +1846,9 @@
   }
 
   // ============================================================
-  // GPS VESSEL DATA
+  // GPS VESSEL DATA (default fallback, overridden by API)
   // ============================================================
-  const vessels = [
+  let vessels = [
     { id: 1, name: 'MV Pacific Star',  type: 'Container', flag: '🇺🇸', status: 'active', speed: '14.2 kn', heading: 'NE', mmsi: '338234981', lat: 35.6762, lon: 139.6503 },
     { id: 2, name: 'MV Atlantic Wave', type: 'Tanker',    flag: '🇬🇧', status: 'active', speed: '11.8 kn', heading: 'W',  mmsi: '232456789', lat: 51.5074, lon: -0.1278 },
     { id: 3, name: 'MV Storm Rider',   type: 'Bulk',      flag: '🇳🇴', status: 'alert',  speed: '9.4 kn',  heading: 'SE', mmsi: '257891234', lat: 59.9139, lon: 10.7522 },
@@ -1860,6 +1860,52 @@
     { id: 9, name: 'MV Southern Cross',type: 'Bulk',      flag: '🇦🇺', status: 'active', speed: '10.3 kn', heading: 'NE', mmsi: '503678901', lat: -33.8688, lon: 151.2093 },
     { id: 10,name: 'MV Cape of Good', type: 'Container', flag: '🇿🇦', status: 'alert',  speed: '15.6 kn', heading: 'N',  mmsi: '601234567', lat: -33.9249, lon: 18.4241 },
   ];
+
+  // ============================================================
+  // API DATA LOADING (Azure SQL via Azure Functions)
+  // ============================================================
+  async function loadVesselsFromAPI() {
+    try {
+      const res = await fetch('/api/vessels');
+      if (!res.ok) throw new Error('API returned ' + res.status);
+      const data = await res.json();
+      if (Array.isArray(data) && data.length > 0) {
+        vessels = data;
+        if (leafletMap) { initMap(); }
+        console.log('Vessels loaded from API:', data.length);
+      }
+    } catch (e) {
+      console.log('Using local vessel data (API unavailable):', e.message);
+    }
+  }
+
+  async function loadComplianceFromAPI() {
+    try {
+      const res = await fetch('/api/compliance');
+      if (!res.ok) throw new Error('API returned ' + res.status);
+      const data = await res.json();
+      if (data && typeof data === 'object' && Object.keys(data).length > 0) {
+        Object.keys(checklistData).forEach(k => delete checklistData[k]);
+        Object.assign(checklistData, data);
+        renderChecklist();
+        console.log('Compliance data loaded from API');
+      }
+    } catch (e) {
+      console.log('Using local compliance data (API unavailable):', e.message);
+    }
+  }
+
+  async function saveComplianceItem(id, done) {
+    try {
+      await fetch('/api/compliance/' + id, {
+        method: 'PUT',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ done })
+      });
+    } catch (e) {
+      console.log('Could not save compliance update to API:', e.message);
+    }
+  }
 
   // ============================================================
   // LEAFLET MAP INITIALIZATION
@@ -2028,6 +2074,7 @@
           badge.textContent = item.done ? 'Completed' : 'Pending';
         }
         updateCompliancePct();
+        saveComplianceItem(id, item.done);
         break;
       }
     }
@@ -2356,6 +2403,12 @@
   // INITIAL TOAST
   // ============================================================
   setTimeout(() => showToast('VGC Maritime Cyber system online — 10 vessels tracked', '⚓'), 1000);
+
+  // ============================================================
+  // LOAD DATA FROM API (Azure SQL) — falls back to local data
+  // ============================================================
+  loadVesselsFromAPI();
+  loadComplianceFromAPI();
 
   </script>
 </body>
