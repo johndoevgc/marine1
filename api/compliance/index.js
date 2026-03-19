@@ -49,6 +49,12 @@ module.exports = async function (context, req) {
         headers: { 'Content-Type': 'application/json' },
         body: { id, done }
       };
+    } else {
+      context.res = {
+        status: 405,
+        headers: { 'Content-Type': 'application/json' },
+        body: { error: 'Method not allowed' }
+      };
     }
   } catch (err) {
     context.log.error('Error in compliance API:', err.message);

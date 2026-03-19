@@ -63,6 +63,8 @@ resource sqlServer 'Microsoft.Sql/servers@2023-05-01-preview' = {
     administratorLoginPassword: sqlAdminPassword
     version: '12.0'
     minimalTlsVersion: '1.2'
+    // NOTE: For production, set publicNetworkAccess to 'Disabled'
+    // and use Private Endpoints or VNet service endpoints instead
     publicNetworkAccess: 'Enabled'
   }
 }
