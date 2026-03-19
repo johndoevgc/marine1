@@ -270,7 +270,7 @@
                 if (item.checked) completed++;
             });
         });
-        var percent = Math.round((completed / total) * 100);
+        var percent = total > 0 ? Math.round((completed / total) * 100) : 0;
         var el = document.getElementById('compliance-percent');
         if (el) {
             el.textContent = percent + '%';
@@ -500,13 +500,15 @@
             btnGps.addEventListener('click', function () {
                 var provider = document.getElementById('gps-provider').value;
                 var apiKey = document.getElementById('api-key').value;
-                var interval = document.getElementById('update-interval').value;
+                var interval = parseInt(document.getElementById('update-interval').value, 10);
+                if (isNaN(interval) || interval < 5) interval = 5;
+                if (interval > 300) interval = 300;
                 var mode = document.getElementById('tracking-mode').value;
 
                 var settings = {
                     provider: provider,
                     apiKey: apiKey,
-                    interval: parseInt(interval, 10),
+                    interval: interval,
                     mode: mode
                 };
 
